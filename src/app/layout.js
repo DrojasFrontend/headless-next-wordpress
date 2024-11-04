@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import "../styles/global.scss";
+import "slick-carousel/slick/slick.css";
 
 const Bilo = localFont({
   src: "./fonts/Bilo.woff",

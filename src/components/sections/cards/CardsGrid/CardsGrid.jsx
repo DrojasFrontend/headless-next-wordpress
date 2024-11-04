@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
+import dynamic from "next/dynamic";
+
 import Image from "next/image";
 import Link from "next/link";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
 
 import className from "classnames/bind";
 import styles from "./CardsGrid.module.scss";
@@ -12,10 +12,16 @@ const cx = className.bind(styles);
 
 import { Container } from "@/components/layout/Container";
 
+const Slider = dynamic(() => import("react-slick"), {
+	ssr: false,
+	loading: () => <div>Loading...</div>,
+});
+
 const CardGrid = ({ data, className }) => {
 	const { titulo, descripcion, targetas, cta } = data;
 
 	const settings = {
+		lazyLoad: true,
 		dots: false,
 		arrows: false,
 		touchMove: false,
@@ -55,53 +61,55 @@ const CardGrid = ({ data, className }) => {
 		<section className="CardsGrid">
 			<div className={cx("component")}>
 				<Container>
-				<div className={cx(["grid", className])}>
-					<h2 className={cx(["heading", "heading--40", "color--primary"])}>
-						{titulo}
-					</h2>
-					<div
-						className="heading--16 color--gray"
-						dangerouslySetInnerHTML={{ __html: descripcion }}
-					/>
-				</div>
-			</Container>
+					<div className={cx(["grid", className])}>
+						<h2 className={cx(["heading", "heading--40", "color--primary"])}>
+							{titulo}
+						</h2>
+						<div
+							className="heading--16 color--gray"
+							dangerouslySetInnerHTML={{ __html: descripcion }}
+						/>
+					</div>
+				</Container>
 
 				<div className={cx("container--slick")}>
-					<Slider {...settings}>
-						{targetas.map((targeta, index) => (
-							<div key={index} className={cx("card")}>
-								<Image
-									src={targeta?.imagen?.mediaItemUrl}
-									fill={false}
-									priority={true}
-									width={775}
-									height={917}
-									quality={75}
-									alt={targeta?.imagen?.altText || ""}
-									title={targeta?.imagen?.title}
-								/>
-								<div className={cx("copy")}>
-									<h3 className="heading--24 color--white">
-										{targeta?.titulo}
-									</h3>
-									<div
-										className="heading--16 color--white"
-										dangerouslySetInnerHTML={{ __html: targeta?.detalle }}
+					<Suspense fallback={<div>Loading...</div>}>
+						<Slider {...settings}>
+							{targetas.map((targeta, index) => (
+								<div key={index} className={cx("card")}>
+									<Image
+										src={targeta?.imagen?.mediaItemUrl}
+										width={775}
+										height={917}
+										loading="lazy"
+										sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+										alt={targeta?.imagen?.altText || ""}
+										title={targeta?.imagen?.title}
+										quality={75}
 									/>
+									<div className={cx("copy")}>
+										<h3 className="heading--24 color--white">
+											{targeta?.titulo}
+										</h3>
+										<div
+											className="heading--16 color--white"
+											dangerouslySetInnerHTML={{ __html: targeta?.detalle }}
+										/>
+									</div>
 								</div>
-							</div>
-						))}
-					</Slider>
+							))}
+						</Slider>
 
-					{cta && (
-						<Link
-							href={cta.url}
-							className="button button--primary button--center"
-							target={cta.target}
-						>
-							{cta.title}
-						</Link>
-					)}
+						{cta && (
+							<Link
+								href={cta.url}
+								className="button button--primary button--center"
+								target={cta.target}
+							>
+								{cta.title}
+							</Link>
+						)}
+					</Suspense>
 				</div>
 			</div>
 		</section>
