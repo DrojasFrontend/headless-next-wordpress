@@ -5,10 +5,7 @@ import className from "classnames/bind";
 import styles from "./HeroImage.module.scss";
 const cx = className.bind(styles);
 
-import { useDebugData } from "@/lib/hooks/useDebugData";
-
 export default function HeroImage({ data }) {
-	useDebugData(data, "HeroImage");
 	return (
 		<section className={cx(["component"])}>
 			<div className={cx(["bckg"])}>

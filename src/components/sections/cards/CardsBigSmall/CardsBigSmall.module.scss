@@ -1,4 +1,4 @@
-@import "/styles/mixin";
+@use '@/styles/functions' as *;
 
 .component {
 	padding: rem(40) 0 0;
